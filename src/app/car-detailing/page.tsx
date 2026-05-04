@@ -1,0 +1,457 @@
+"use client";
+
+import Link from 'next/link';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Shield, 
+  Sparkles, 
+  MapPin, 
+  Car, 
+  CheckCircle2, 
+  X,
+  Phone,
+  Droplets,
+  ChevronRight,
+  Zap,
+  Gauge,
+  Key
+} from 'lucide-react';
+
+const servicesData = [
+  { id: 'ppf', title: 'Paint Protection Film', caption: 'Invisible body armor.', img: 'https://images.unsplash.com/photo-1619405399517-d7fce0f13302?auto=format&fit=crop&q=80&w=800', desc: 'The ultimate defense. We apply a self-healing, optically clear polyurethane film that absorbs rock chips, scratches, and road debris to keep your paint utterly flawless.', benefits: ['Self-healing zero-latency top coat', '10-year durability warranty', 'Invisible edge lapping', 'Impact energy absorption'] },
+  { id: 'ceramic', title: 'Ceramic Coating', caption: 'Aviation-grade protection.', img: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=800', desc: 'Lock in perfection. We apply high-solid nano-ceramic coatings that form a hardened, hydrophobic shield over your paint lasting for years.', benefits: ['Years of durable protection', 'Extreme hydrophobic properties', 'Resists UV rays & etching', 'Deep, mirror-like gloss'] },
+  { id: 'correction', title: 'Paint Correction', caption: 'Restore depth and clarity.', img: 'https://images.unsplash.com/photo-1619682817481-e994891cd1f5?auto=format&fit=crop&w=800', desc: 'Eradicate swirl marks, scratches, and oxidation. Our multi-stage machine polishing reveals perfect depth and clarity.', benefits: ['Removes up to 95% of defects', 'Restores factory clear coat clarity', 'Enhances gloss dramatically', 'Ceramic coating preparation'] },
+  { id: 'interior', title: 'Interior Restoration', caption: 'Bespoke cabin rejuvenation.', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=800', desc: "A comprehensive revitalization of your vehicle’s cabin. From steam cleaning carpets to treating fine leather surfaces, we restore the interior to factory-fresh perfection.", benefits: ['Steam cleaning & sanitization', 'Leather conditioning & protection', 'Alcantara resetting', 'Crevice & vent clearing'] },
+  { id: 'fleet', title: 'Commercial Fleets', caption: 'Enterprise scalability.', img: '/fleet.png', desc: 'Optimize your entire operational fleet with our specialized, high-volume detailing cycles designed specifically for enterprise vans, logistics, and company vehicles.', benefits: ['Volume pricing structures', 'Automated maintenance cycles', 'Brand standard preservation', 'On-site mobile execution'] },
+  { id: 'truck', title: 'Heavy Duty Trucks', caption: 'Industrial-grade restoration.', img: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&q=80&w=800', desc: 'A rigorous deep clean protocol engineered for semi-trucks, heavy haulers, and industrial equipment. We combat severe road grime and industrial fallout.', benefits: ['Heavy industrial degreasing', 'Aluminum and chrome polishing', 'Cabin deep sanitation', 'Undercarriage extreme pressure wash'] },
+];
+
+const inventoryData = [
+  { 
+    id: 'sf90', 
+    title: 'Ferrari SF90 Stradale', 
+    price: '$585,000', 
+    img: 'https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&w=1200', 
+    gallery: [
+      'https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&w=1200',
+      'https://images.unsplash.com/photo-1614200187524-dc4b892acf16?auto=format&fit=crop&w=1200',
+      'https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?auto=format&fit=crop&w=1200',
+    ],
+    desc: 'The absolute apex of Ferrari engineering. This plug-in hybrid hypercar seamlessly meshes a twin-turbo V8 with three electric motors to deliver earth-shattering acceleration and track-dominating handling.', 
+    specs: ['986 Horsepower', '0-60 mph in 2.0s', 'Hybrid V8 Twin-Turbo', 'AWD Torque Vectoring System'] 
+  },
+  { 
+    id: 'cullinan', 
+    title: 'Rolls-Royce Cullinan', 
+    price: '$415,000', 
+    img: '/rr_front.png', 
+    gallery: [
+       '/rr_front.png',
+       '/rr_interior.png',
+       'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1200'
+    ],
+    desc: 'The most capable and luxurious SUV on earth. The Cullinan offers the legendary "Magic Carpet Ride" across any terrain, surrounded by the finest handcrafted leathers and bespoke woods.', 
+    specs: ['563 Horsepower', '6.75L Twin-Turbo V12', 'Shooting Star Headliner', 'Bespoke Studio Audio'] 
+  },
+  { 
+    id: 'gclass', 
+    title: 'Mercedes-Benz G63 AMG', 
+    price: '$185,000', 
+    img: 'https://images.unsplash.com/photo-1520031441872-265e4ff70366?auto=format&fit=crop&w=1200', 
+    gallery: [
+      'https://images.unsplash.com/photo-1520031441872-265e4ff70366?auto=format&fit=crop&w=1200',
+      'https://images.unsplash.com/photo-1606788075765-a82f1f50a4bf?auto=format&fit=crop&w=1200',
+      'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1200'
+    ],
+    desc: 'An undisputed cultural icon. The G63 melds brute military-grade 4x4 capability with opulent luxury and a raucous handcrafted AMG V8 engine that commands absolute authority.', 
+    specs: ['577 Horsepower', '4.0L V8 Biturbo', '3 Locking Differentials', 'AMG Performance Exhaust'] 
+  },
+  { 
+    id: 'gt3', 
+    title: 'Porsche 911 GT3', 
+    price: 'Contact for Price', 
+    img: '/gt3_front.png', 
+    gallery: [
+      '/gt3_front.png',
+      '/gt3_rear.png',
+      'https://images.unsplash.com/photo-1611821064430-0d40221e4e03?auto=format&fit=crop&w=1200'
+    ],
+    desc: 'Born on the track. The 911 GT3 delivers arguably the purest, most visceral driving experience of any modern sports car, equipped with aero-derived swan-neck wings.', 
+    specs: ['502 Horsepower', '4.0L Naturally Aspirated Flat-6', '9,000 RPM Redline limit', 'Racing Derived Aerodynamics'] 
+  },
+];
+
+export default function CarDetailingPage() {
+  const [activeService, setActiveService] = useState<typeof servicesData[0] | null>(null);
+  const [activeCar, setActiveCar] = useState<typeof inventoryData[0] | null>(null);
+  const [selectedGalleryImg, setSelectedGalleryImg] = useState<string | null>(null);
+  const [bookingStatus, setBookingStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+
+  const openCarModal = (car: typeof inventoryData[0]) => {
+    setActiveCar(car);
+    setSelectedGalleryImg(car.gallery[0]);
+  };
+
+  const handleBookingSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setBookingStatus('submitting');
+    const formData = new FormData(e.currentTarget);
+    try {
+      await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.get('name'),
+          email: 'N/A',
+          phone: formData.get('phone'),
+          company: formData.get('vehicle'),
+          message: `Service: ${formData.get('service')} | Location: ${formData.get('location')} | Notes: ${formData.get('notes')}`,
+          type: 'Car Detailing Booking',
+        }),
+      });
+      setBookingStatus('success');
+    } catch {
+      setBookingStatus('idle');
+    }
+  };
+
+  return (
+    <div className="bg-[#050505] min-h-screen text-white pt-10">
+      {/* Hero Section */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?auto=format&fit=crop&q=80&w=2000" alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#050505] via-[#050505]/80 to-[#050505]/40"></div>
+        </div>
+        
+        <div className="relative z-10 max-w-7xl w-full px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 mt-20">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }} 
+            animate={{ opacity: 1, x: 0 }}
+            className="flex flex-col items-start"
+          >
+            <span className="text-[#D18F08] uppercase tracking-[0.4em] text-[10px] font-bold mb-6 flex items-center gap-4">
+              <span className="w-12 h-[1px] bg-[#D18F08]"></span> Automotive Perfection
+            </span>
+            <h1 className="text-5xl md:text-8xl font-bold leading-[1.1] mb-8" style={{ fontFamily: 'var(--font-accent)' }}>
+              THE ART OF <br /> <span className="text-gold-gradient">EXECUTION.</span>
+            </h1>
+            <p className="text-lg text-gray-300 max-w-xl mb-12 leading-relaxed">
+              Bespoke automotive enhancement and a curated inventory of perfected exotic vehicles. Experience the absolute pinnacle of luxury care and precision engineering.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-6">
+              <a href="#contact" className="btn-premium bg-[#D18F08] text-black px-12 py-4 rounded-full text-xs font-bold uppercase tracking-widest">Book Execution</a>
+              <a href="#services" className="glass-panel px-12 py-4 rounded-full text-xs font-bold uppercase tracking-widest hover:border-[#D18F08] transition-all">Explore Services</a>
+            </div>
+          </motion.div>
+
+          <div className="hidden lg:flex flex-col justify-center gap-8">
+            {[
+              { icon: <Shield className="text-[#D18F08]" />, title: 'Certified Protection', desc: 'Sovereign protection for your automotive assets.' },
+              { icon: <Droplets className="text-[#D18F08]" />, title: 'Advanced Hydro', desc: 'Extreme water repellency and self-cleaning tech.' },
+              { icon: <Sparkles className="text-[#D18F08]" />, title: 'Concierge Care', desc: 'Bespoke service tailored to your precise schedule.' },
+            ].map((item, i) => (
+              <motion.div 
+                key={i} 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ delay: 0.3 + (i * 0.1) }}
+                className="flex items-start gap-6 glass-panel p-6 rounded-3xl border-transparent hover:border-[#D18F08]/30 transition-all bg-[#0a0a0a]/60 backdrop-blur-xl"
+              >
+                <div className="bg-[#D18F08]/10 p-4 rounded-2xl">{item.icon}</div>
+                <div>
+                  <h4 className="font-bold text-white mb-1 uppercase tracking-wider text-sm">{item.title}</h4>
+                  <p className="text-gray-400 text-xs leading-relaxed">{item.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section id="services" className="py-32 px-6 relative z-10 bg-[#050505]">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-8">
+            <div className="max-w-xl">
+              <h2 className="text-4xl md:text-6xl font-bold mb-6" style={{ fontFamily: 'var(--font-accent)' }}>SERVICE <span className="text-[#D18F08]">TIERS.</span></h2>
+              <p className="text-gray-400 text-lg leading-relaxed">Select a specialized treatment protocol meticulously engineered for your vehicle&apos;s specific needs, including fleet and industrial capacity.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {servicesData.map((service, i) => (
+              <motion.div 
+                key={service.id} 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="group relative min-h-[500px] flex flex-col justify-end rounded-[2.5rem] overflow-hidden glass-panel glass-panel-hover"
+                onClick={() => setActiveService(service)}
+              >
+                <img src={service.img} alt={service.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                <div className="relative z-10 p-10 flex flex-col justify-end h-full mt-auto">
+                  <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-accent)' }}>{service.title}</h3>
+                  <p className="text-[#D18F08] text-[10px] font-bold uppercase tracking-[0.2em] bg-black/60 w-fit px-3 py-1 rounded-full">{service.caption}</p>
+                  <button className="mt-6 flex items-center gap-2 bg-[#D18F08]/20 w-fit px-4 py-2 rounded-full text-white text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity translate-y-4 group-hover:translate-y-0 duration-300">
+                    View Protocol <ChevronRight size={14} className="text-[#D18F08]" />
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Service Modal */}
+      <AnimatePresence>
+        {activeService && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-6 backdrop-blur-xl"
+            onClick={() => setActiveService(null)}
+          >
+            <motion.div 
+               initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+               className="w-full max-w-6xl bg-[#0A0A0A] border border-white/10 rounded-[3rem] flex flex-col lg:flex-row relative overflow-hidden shadow-3xl"
+               onClick={e => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setActiveService(null)}
+                className="absolute top-6 right-6 z-20 text-white bg-white/5 p-3 rounded-full hover:bg-[#D18F08] hover:text-black transition-all"
+              >
+                <X size={20} />
+              </button>
+              
+              <div className="w-full lg:w-1/2 h-64 lg:h-auto relative">
+                <img src={activeService.img} className="w-full h-full object-cover" alt="" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0A0A0A]"></div>
+              </div>
+              
+              <div className="w-full lg:w-1/2 p-12 lg:p-16 flex flex-col justify-center">
+                <span className="text-[#D18F08] uppercase tracking-[.3em] text-[10px] font-bold mb-4">{activeService.caption}</span>
+                <h2 className="text-4xl font-bold mb-8" style={{ fontFamily: 'var(--font-accent)' }}>{activeService.title}</h2>
+                <p className="text-gray-300 text-lg leading-relaxed mb-10 font-light">{activeService.desc}</p>
+                <div className="space-y-4 mb-12">
+                  {activeService.benefits.map((b, i) => (
+                    <div key={i} className="flex items-center gap-4 text-sm text-gray-400">
+                      <div className="w-1.5 h-1.5 bg-[#D18F08] rotate-45"></div> {b}
+                    </div>
+                  ))}
+                </div>
+                <a href="#contact" onClick={() => setActiveService(null)} className="btn-premium bg-[#D18F08] text-black w-full py-5 rounded-2xl text-xs font-bold uppercase tracking-widest text-center shadow-[0_0_20px_rgba(209,143,8,0.2)]">
+                  Book This Service
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Car Modal with Gallery */}
+      <AnimatePresence>
+        {activeCar && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-6 backdrop-blur-xl"
+            onClick={() => setActiveCar(null)}
+          >
+            <motion.div 
+               initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+               className="w-full max-w-6xl bg-[#0A0A0A] border border-white/10 rounded-[3rem] flex flex-col lg:flex-row relative overflow-hidden shadow-3xl"
+               onClick={e => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setActiveCar(null)}
+                className="absolute top-6 right-6 z-20 text-white bg-white/5 p-3 rounded-full hover:bg-[#D18F08] hover:text-black transition-all"
+              >
+                <X size={20} />
+              </button>
+              
+              <div className="w-full lg:w-1/2 h-[50vh] lg:h-auto relative flex flex-col bg-black">
+                <div className="relative flex-grow overflow-hidden">
+                  <motion.img 
+                    key={selectedGalleryImg}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    src={selectedGalleryImg || activeCar.gallery[0]} 
+                    className="w-full h-full object-cover" 
+                    alt={activeCar.title} 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0A0A0A]"></div>
+                </div>
+                {/* Thumbnails */}
+                <div className="h-24 md:h-32 bg-[#050505] border-t border-white/5 flex p-3 gap-3 overflow-x-auto custom-scrollbar">
+                  {activeCar.gallery.map((img, idx) => (
+                    <button 
+                      key={idx} 
+                      onClick={() => setSelectedGalleryImg(img)}
+                      className={`relative w-24 md:w-32 h-full flex-shrink-0 rounded-2xl overflow-hidden border-2 transition-all ${selectedGalleryImg === img ? 'border-[#D18F08] scale-95 opacity-100' : 'border-transparent opacity-50 hover:opacity-100'}`}
+                    >
+                      <img src={img} className="w-full h-full object-cover" alt="" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="w-full lg:w-1/2 p-8 lg:p-16 flex flex-col justify-center overflow-y-auto">
+                <span className="text-[#D18F08] uppercase tracking-[.3em] text-[10px] font-bold mb-4">Exotic Inventory</span>
+                <h2 className="text-4xl font-bold mb-6" style={{ fontFamily: 'var(--font-accent)' }}>{activeCar.title}</h2>
+                <div className="mb-6">
+                  <span className="text-3xl text-white font-bold tracking-wider">{activeCar.price}</span>
+                </div>
+                <p className="text-gray-300 text-sm leading-relaxed mb-8 font-light">{activeCar.desc}</p>
+                
+                <h4 className="text-white text-xs uppercase tracking-widest font-bold mb-4 flex items-center gap-2">
+                  <Key size={14} className="text-[#D18F08]" /> Technical Specifications
+                </h4>
+                <div className="space-y-4 mb-10 bg-white/5 border border-white/5 p-6 rounded-3xl">
+                  {activeCar.specs.map((spec, i) => (
+                    <div key={i} className="flex items-center gap-4 text-xs text-gray-400">
+                      <Zap size={12} className="text-[#D18F08]" /> {spec}
+                    </div>
+                  ))}
+                </div>
+                <a href="#contact" onClick={() => setActiveCar(null)} className="btn-premium bg-[#111] border border-white/20 hover:border-[#D18F08] text-white w-full py-4 rounded-2xl text-xs font-bold uppercase tracking-widest text-center transition-all mt-auto">
+                  Request Information
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Car Sales Section */}
+      <section className="py-32 px-6 border-t border-white/5 bg-[#0A0A0A]">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-24">
+            <span className="text-[#D18F08] uppercase tracking-[0.4em] text-[10px] font-bold mb-4 block">Premium Inventory</span>
+            <h2 className="text-4xl md:text-6xl font-bold" style={{ fontFamily: 'var(--font-accent)' }}>BOUGHT. <span className="text-[#D18F08]">PERFECTED.</span> SOLD.</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {inventoryData.map((car) => (
+              <div 
+                key={car.id} 
+                onClick={() => openCarModal(car)}
+                className="group glass-panel rounded-[3rem] overflow-hidden border-transparent hover:border-[#D18F08]/40 transition-all duration-500 shadow-3xl flex flex-col cursor-pointer"
+              >
+                <div className="relative aspect-[4/3] w-full overflow-hidden">
+                  <div className="absolute top-6 right-6 z-10 bg-black/60 backdrop-blur-md text-white border border-[#D18F08]/30 text-[10px] font-bold px-4 py-1.5 uppercase tracking-widest rounded-full">View Gallery</div>
+                  <img src={car.img} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" alt="" />
+                </div>
+                <div className="p-10 flex flex-col md:flex-row justify-between items-center gap-6">
+                  <div className="text-center md:text-left">
+                    <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-accent)' }}>{car.title}</h3>
+                    <p className="text-[#D18F08] font-bold text-lg tracking-wider">{car.price}</p>
+                  </div>
+                  <button className="btn-premium border border-white/10 bg-white/5 text-white group-hover:bg-[#D18F08] group-hover:border-[#D18F08] group-hover:text-black px-8 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all">
+                    Explore
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-40 px-6 border-t border-white/5 relative overflow-hidden bg-[#050505]">
+          <div className="absolute bottom-0 left-0 w-full h-[300px] bg-[#D18F08] opacity-[0.02] blur-[150px] rounded-full"></div>
+          
+          <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-20">
+            <div className="w-full lg:w-1/3">
+              <h2 className="text-4xl md:text-6xl font-bold mb-8 leading-tight" style={{ fontFamily: 'var(--font-accent)' }}>LET&apos;S BOOK <br /><span className="text-[#D18F08]">PERFECTION.</span></h2>
+              <p className="text-gray-400 text-lg leading-relaxed mb-12 font-light">
+                Submit your request and our automotive concierge will contact you to finalize your detail schedule or vehicle inquiry.
+              </p>
+              <div className="space-y-8">
+                <div className="flex items-center gap-6">
+                  <div className="bg-[#D18F08]/10 p-4 rounded-2xl text-[#D18F08] border border-[#D18F08]/20"><Phone size={24} /></div>
+                  <div>
+                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Direct Line</p>
+                    <a href="tel:+1800555CRAM" className="text-xl font-bold hover:text-[#D18F08] transition text-white">+1 (800) 555-CRAM</a>
+                  </div>
+                </div>
+                <div className="flex items-center gap-6">
+                  <div className="bg-[#D18F08]/10 p-4 rounded-2xl text-[#D18F08] border border-[#D18F08]/20"><MapPin size={24} /></div>
+                  <div>
+                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Service Area</p>
+                    <p className="text-xl font-bold text-white leading-tight">Mobile Concierge Nationwide</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full lg:w-2/3">
+              {bookingStatus === 'success' ? (
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-panel p-20 rounded-[4rem] text-center border-[#D18F08]/30">
+                  <div className="bg-[#D18F08]/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(209,143,8,0.2)]">
+                    <CheckCircle2 size={40} className="text-[#D18F08]" />
+                  </div>
+                  <h3 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: 'var(--font-accent)' }}>Booking Received</h3>
+                  <p className="text-gray-400 text-lg">Our experts will review your request and contact you within the hour.</p>
+                </motion.div>
+              ) : (
+                <form className="glass-panel p-12 md:p-16 rounded-[4rem] space-y-8 border-transparent hover:border-white/5 transition-all" onSubmit={handleBookingSubmit}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-bold uppercase tracking-[.3em] text-gray-500 px-1">Full Identity</label>
+                       <input name="name" required type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white outline-none focus:border-[#D18F08] transition-all" placeholder="John Wick" />
+                    </div>
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-bold uppercase tracking-[.3em] text-gray-500 px-1">Contact Protocol</label>
+                       <input name="phone" required type="tel" className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white outline-none focus:border-[#D18F08] transition-all" placeholder="+1 (000) 000-0000" />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-bold uppercase tracking-[.3em] text-gray-500 px-1">Vehicle Asset</label>
+                       <input name="vehicle" type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white outline-none focus:border-[#D18F08] transition-all" placeholder="e.g. Porsche 911" />
+                    </div>
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-bold uppercase tracking-[.3em] text-gray-500 px-1">Service Tier</label>
+                       <select name="service" className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white outline-none focus:border-[#D18F08] transition-all appearance-none cursor-pointer">
+                          <option className="text-black">Ceramic Coating</option>
+                          <option className="text-black">Paint Protection Film</option>
+                          <option className="text-black">Mobile Detail</option>
+                          <option className="text-black">Commercial Fleet</option>
+                          <option className="text-black">Heavy Duty Truck</option>
+                       </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                     <label className="text-[10px] font-bold uppercase tracking-[.3em] text-gray-500 px-1">Execution Location</label>
+                     <input name="location" type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white outline-none focus:border-[#D18F08] transition-all" placeholder="Enter service address" />
+                  </div>
+
+                  <div className="space-y-2">
+                     <label className="text-[10px] font-bold uppercase tracking-[.3em] text-gray-500 px-1">Service Constraints / Notes</label>
+                     <textarea name="notes" rows={4} className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white outline-none focus:border-[#D18F08] transition-all resize-none" placeholder="Detail any specific requirements..."></textarea>
+                  </div>
+
+                  <button type="submit" disabled={bookingStatus === 'submitting'} className="btn-premium bg-[#D18F08] text-black w-full py-6 rounded-2xl text-xs font-bold uppercase tracking-[.3em] shadow-3xl flex items-center justify-center gap-4">
+                    {bookingStatus === 'submitting' ? 'Transmitting...' : 'Submit Booking Request'}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+      </section>
+
+      {/* Simple Footer */}
+      <footer className="bg-black py-20 px-6 border-t border-white/5">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+          <Link href="/">
+            <img src="/cram_logo_cs.png" alt="CRAM" className="h-8 w-auto" />
+          </Link>
+          <p className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.4em]">&copy; 2026 CRAM AUTOMOTIVE. ALL RIGHTS RESERVED.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
