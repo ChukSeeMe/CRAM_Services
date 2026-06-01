@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import DemoModal from "@/components/DemoModal";
 import FloatingActions from "@/components/FloatingActions";
+import ChatWidget from "@/components/ChatWidget";
 
 const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], display: "swap", variable: "--font-space-grotesk" });
@@ -29,6 +30,7 @@ export default function RootLayout({
         </main>
         <DemoModal />
         <FloatingActions />
+        <ChatWidget />
       </body>
     </html>
   );

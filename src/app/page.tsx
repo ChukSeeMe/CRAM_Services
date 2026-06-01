@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight, Bot, Car, Plane } from 'lucide-react';
+import Footer from '@/components/Footer';
 
 export default function Home() {
   const containerVariants = {
@@ -28,7 +29,7 @@ export default function Home() {
       title: 'AI Solutions',
       href: '/ai-revenue',
       icon: <Bot className="w-8 h-8 text-[#D18F08]" />,
-      image: '/ai_provided_image.jpg',
+      image: '/ai_platform_bg.jpg',
       desc: 'Deploy advanced AI architectures to automate growth and scale revenue engines.',
       cta: 'Enter Platform'
     },
@@ -122,39 +123,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Footer */}
-      <footer className="w-full bg-[#030303] border-t border-white/5 py-24 px-6 relative z-10 mt-auto">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
-          <div className="col-span-1 md:col-span-2">
-            <img src="/cram_logo_cs.png" alt="CRAM" className="h-10 w-auto mb-8" />
-            <p className="text-gray-500 text-sm leading-relaxed max-w-sm">
-              The premium service hub for high-growth enterprises and discerning luxury clientele. Connecting advanced AI intelligence with meticulous physical execution.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="text-[#D18F08] font-bold mb-6 uppercase tracking-widest text-xs">Menu</h4>
-            <ul className="space-y-4 text-sm text-gray-400">
-              <li><Link href="/ai-revenue" className="hover:text-white transition pointer-events-auto z-20">AI Revenue Platform</Link></li>
-              <li><Link href="/car-detailing" className="hover:text-white transition pointer-events-auto z-20">Automotive Detailing</Link></li>
-              <li><button onClick={() => window.dispatchEvent(new Event('open-demo-modal'))} className="hover:text-white transition pointer-events-auto z-20">Aviation Services</button></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-[#D18F08] font-bold mb-6 uppercase tracking-widest text-xs">Connectivity</h4>
-            <ul className="space-y-4 text-sm text-gray-400">
-              <li><a href="mailto:contact@cramservices.com" className="hover:text-white transition z-20 relative pointer-events-auto">contact@cramservices.com</a></li>
-              <li><a href="tel:+1800555CRAM" className="hover:text-white transition font-bold z-20 relative pointer-events-auto">+1 (800) 555-CRAM</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto border-t border-white/5 mt-20 pt-10 text-center">
-          <p className="text-[10px] text-gray-600 uppercase tracking-[0.4em] font-bold">
-            &copy; 2026 CRAM Services Network. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

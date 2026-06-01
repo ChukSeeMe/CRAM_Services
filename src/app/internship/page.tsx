@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { ShieldCheck, BookOpen, Users, Cpu, Car, CheckCircle2, Building, Flag, Target, Award, HeartHandshake } from 'lucide-react';
 import Link from 'next/link';
+import Footer from '@/components/Footer';
 
 export default function InternshipPage() {
   const containerVariants = {
@@ -159,11 +160,15 @@ export default function InternshipPage() {
             <p className="text-gray-400 mb-10 max-w-2xl mx-auto text-sm leading-relaxed">
                Whether you are looking to acquire new skills, partner with our CIC initiatives, or support our community programs, we welcome collaboration that drives positive impact.
             </p>
-            <button className="btn-premium bg-white text-black px-10 py-4 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-[#D18F08] transition-all">
+            <button 
+              onClick={() => window.dispatchEvent(new Event('open-demo-modal'))}
+              className="btn-premium bg-white text-black px-10 py-4 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-[#D18F08] transition-all"
+            >
                Get Involved
             </button>
          </div>
       </section>
+      <Footer />
     </div>
   );
 }

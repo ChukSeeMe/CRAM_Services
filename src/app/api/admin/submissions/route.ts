@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { getSubmissions } from '@/lib/db';
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization');
@@ -9,20 +8,10 @@ export async function GET(request: Request) {
   }
 
   try {
-    const DB_FILE = path.join(process.cwd(), 'database.json');
-    let submissions = [];
-    try {
-      const fileContent = await fs.readFile(DB_FILE, 'utf-8');
-      submissions = JSON.parse(fileContent);
-    } catch (e) {
-      // File doesn't exist yet, return empty array
-    }
-    
-    // Sort by timestamp descending
-    submissions.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-    
+    const submissions = await getSubmissions();
     return NextResponse.json(submissions);
   } catch (error) {
+    console.error('Failed to fetch submissions:', error);
     return NextResponse.json({ error: 'Failed to fetch submissions' }, { status: 500 });
   }
 }

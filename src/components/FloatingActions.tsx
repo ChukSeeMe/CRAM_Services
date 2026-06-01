@@ -20,8 +20,14 @@ export default function FloatingActions() {
     { 
       name: 'Call Us', 
       icon: <Phone size={20} />, 
-      href: 'tel:+1800555CRAM',
+      href: 'tel:+447448167943',
       color: 'bg-white text-black'
+    },
+    { 
+      name: 'WhatsApp', 
+      icon: <MessageSquare size={20} />, 
+      href: 'https://wa.me/447448167943',
+      color: 'bg-[#25D366] text-white'
     },
     { 
       name: 'Book Demo', 

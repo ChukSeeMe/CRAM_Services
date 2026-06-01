@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, Layers, Search, ArrowRight, Zap, Car } from 'lucide-react';
 import Link from 'next/link';
+import Footer from '@/components/Footer';
 
 const categories = ["All", "Automotive", "Technology", "Process", "Community"];
 
@@ -35,13 +36,16 @@ export default function GalleryPage() {
 
   useEffect(() => {
     fetch('/api/blogs')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then(data => {
-        setItems(data);
+        setItems(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch(err => {
-        console.error("Failed to load blogs:", err);
+        console.error("Failed to load gallery:", err);
         setLoading(false);
       });
   }, []);
@@ -94,7 +98,16 @@ export default function GalleryPage() {
             ))}
           </div>
 
+          {loading && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[250px]">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="rounded-3xl bg-white/5 animate-pulse h-[250px]" />
+              ))}
+            </div>
+          )}
+
           {/* Masonry Grid */}
+          {!loading && (
           <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[250px]">
             <AnimatePresence>
               {filteredItems.map((item) => (
@@ -107,7 +120,7 @@ export default function GalleryPage() {
                     transition={{ duration: 0.4 }}
                     className={`relative group overflow-hidden rounded-3xl bg-[#111] border border-white/5 hover:border-[#D18F08]/40 h-full w-full`}
                   >
-                    <img src={item.src} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <img src={item.src || item.image_url || '/dashboard.png'} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     
                     <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-6 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
@@ -123,8 +136,9 @@ export default function GalleryPage() {
               ))}
             </AnimatePresence>
           </motion.div>
+          )}
 
-          {filteredItems.length === 0 && (
+          {!loading && filteredItems.length === 0 && (
             <div className="text-center py-20 text-gray-500">
               <Layers size={48} className="mx-auto mb-4 opacity-20" />
               <p>No images found for this category.</p>
@@ -141,9 +155,12 @@ export default function GalleryPage() {
               <span className="text-[#D18F08] uppercase tracking-[0.4em] text-[10px] font-bold mb-4 block">Company Announcements</span>
               <h2 className="text-4xl md:text-5xl font-bold" style={{ fontFamily: 'var(--font-accent)' }}>NEWS & <span className="text-white/30">UPDATES.</span></h2>
             </div>
-            <Link href="/contact" className="btn-premium bg-[#111] border border-white/20 text-white px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-widest hover:border-[#D18F08] hover:text-[#D18F08] transition-all whitespace-nowrap">
+            <button 
+              onClick={() => window.dispatchEvent(new Event('open-demo-modal'))}
+              className="btn-premium bg-[#111] border border-white/20 text-white px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-widest hover:border-[#D18F08] hover:text-[#D18F08] transition-all whitespace-nowrap"
+            >
               Press Inquiries
-            </Link>
+            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -169,6 +186,7 @@ export default function GalleryPage() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

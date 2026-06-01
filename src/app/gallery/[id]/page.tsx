@@ -2,12 +2,18 @@ import { getBlogs } from '@/lib/blogsDb';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, Tag, User } from 'lucide-react';
+import Footer from '@/components/Footer';
+
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const blogs = await getBlogs();
-  return blogs.map((item) => ({
-    id: item.id.toString(),
-  }));
+  try {
+    const blogs = await getBlogs();
+    return blogs.map((item) => ({ id: item.id.toString() }));
+  } catch {
+    // DB unavailable at build time — pages will be generated on demand
+    return [];
+  }
 }
 
 export default async function GalleryDetail({ params }: { params: Promise<{ id: string }> }) {
@@ -79,6 +85,7 @@ export default async function GalleryDetail({ params }: { params: Promise<{ id: 
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

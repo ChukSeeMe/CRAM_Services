@@ -20,6 +20,7 @@ export default function Navbar() {
   const navLinks: { name: string; href: string; onClick?: () => void }[] = [
     { name: 'AI Solutions', href: '/ai-revenue' },
     { name: 'Car Detailing', href: '/car-detailing' },
+    { name: 'Products', href: '/products' },
     { name: 'Gallery', href: '/gallery' },
     { name: 'Community', href: '/internship' },
   ];
@@ -56,7 +57,7 @@ export default function Navbar() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-4">
-            <a href="tel:+1800555CRAM" className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-300 hover:text-white transition">
+            <a href="tel:+447448167943" className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-300 hover:text-white transition">
               <Phone size={14} className="text-[#D18F08]" />
               Support
             </a>
@@ -102,7 +103,7 @@ export default function Navbar() {
                 </Link>
               ))}
               <div className="h-[1px] bg-white/10 w-full my-2"></div>
-              <a href="tel:+1800555CRAM" className="flex items-center gap-4 text-white font-bold">
+              <a href="tel:+447448167943" className="flex items-center gap-4 text-white font-bold">
                 <Phone className="text-[#D18F08]" /> Call Support
               </a>
               <button 

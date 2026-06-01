@@ -1,40 +1,45 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Basic in-memory store for rate limiting (per isolate)
-// This provides a "best-effort" rate limiting layer without needing external Redis.
-const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
+// In-memory rate limit store (best-effort — resets per container instance)
+const store = new Map<string, { count: number; resetAt: number }>();
 
-const RATE_LIMIT = 5; // max requests
-const WINDOW_MS = 60 * 1000; // 1 minute window
+function check(key: string, limit: number, windowMs: number): boolean {
+  const now = Date.now();
+  const entry = store.get(key);
+  if (!entry || now > entry.resetAt) {
+    store.set(key, { count: 1, resetAt: now + windowMs });
+    return true;
+  }
+  if (entry.count >= limit) return false;
+  entry.count++;
+  return true;
+}
+
+const LIMITS: Record<string, { limit: number; window: number }> = {
+  '/api/contact':    { limit: 5,  window: 60_000 },
+  '/api/admin/auth': { limit: 3,  window: 60_000 },
+  '/api/blogs':      { limit: 20, window: 60_000 },
+  '/api/chat':       { limit: 10, window: 60_000 },
+};
 
 export default function proxy(request: NextRequest) {
-  // Apply rate limiting specifically to the contact/demo API
-  if (request.nextUrl.pathname.startsWith('/api/contact') && request.method === 'POST') {
-    // Attempt to get the client IP, fallback to a generic string if unavailable locally
-    const ip = request.headers.get('x-forwarded-for') || 'anonymous_ip';
-    
-    const now = Date.now();
-    const record = rateLimitMap.get(ip);
+  const { pathname } = request.nextUrl;
+  const { method } = request;
 
-    if (!record) {
-      rateLimitMap.set(ip, { count: 1, lastReset: now });
-    } else {
-      // If the window has passed, reset the counter
-      if (now - record.lastReset > WINDOW_MS) {
-        rateLimitMap.set(ip, { count: 1, lastReset: now });
-      } else {
-        record.count++;
-        if (record.count > RATE_LIMIT) {
-          console.warn(`[SECURITY] Rate limit exceeded for IP: ${ip}`);
-          return NextResponse.json(
-            { error: 'Too many requests. Please try again later.' },
-            { 
-              status: 429,
-              headers: { 'Retry-After': '60' }
-            }
-          );
-        }
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || request.headers.get('x-real-ip')
+    || 'unknown';
+
+  for (const [route, cfg] of Object.entries(LIMITS)) {
+    if (pathname.startsWith(route) && (method === 'POST' || route === '/api/blogs')) {
+      const allowed = check(`${ip}:${route}`, cfg.limit, cfg.window);
+      if (!allowed) {
+        console.warn(`[RATE LIMIT] ${ip} exceeded limit on ${route}`);
+        return NextResponse.json(
+          { error: 'Too many requests. Please try again later.' },
+          { status: 429, headers: { 'Retry-After': '60' } }
+        );
       }
     }
   }
@@ -43,6 +48,5 @@ export default function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Only run middleware on API routes
   matcher: '/api/:path*',
 };
