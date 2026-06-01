@@ -1,0 +1,11 @@
+.git
+.gitignore
+node_modules
+.next
+.env.local
+.env.production
+database.json
+database-blogs.json
+public/uploads
+README.md
+.claude

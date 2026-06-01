@@ -1,0 +1,75 @@
+name: Deploy CRAM Services
+
+on:
+  push:
+    branches: [main]
+
+env:
+  ACR_REGISTRY: tutorflowacr.azurecr.io
+  IMAGE_NAME: cramservices
+  CONTAINER_APP_NAME: cramservices-frontend
+  RESOURCE_GROUP: tutorflow-rg
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Azure Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.ACR_REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.ACR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest,${{ env.ACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.CRAM_API_URL }}
+            NEXT_PUBLIC_BOOKING_LINK=${{ secrets.BOOKING_LINK }}
+            NEXT_PUBLIC_WHATSAPP=447448167943
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Container Apps
+        uses: azure/CLI@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az containerapp update \
+              --name ${{ env.CONTAINER_APP_NAME }} \
+              --resource-group ${{ env.RESOURCE_GROUP }} \
+              --image ${{ env.ACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+              --set-env-vars \
+                "NODE_ENV=production" \
+                "PORT=4000" \
+                "NEXT_PUBLIC_API_URL=${{ secrets.CRAM_API_URL }}" \
+                "NEXT_PUBLIC_BOOKING_LINK=${{ secrets.BOOKING_LINK }}" \
+                "NEXT_PUBLIC_WHATSAPP=447448167943" \
+                "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" \
+                "DATABASE_URL=${{ secrets.DATABASE_URL }}" \
+                "RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}" \
+                "EMAIL_ADMIN=cramserviceshub@gmail.com" \
+                "EMAIL_FROM=CRAM Services <onboarding@resend.dev>" \
+                "EMAIL_REPLY_TO=cramserviceshub@gmail.com" \
+                "AZURE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}"
+
+      - name: Health check
+        run: |
+          echo "Deployment complete. Container image: ${{ env.ACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          echo "Run: az containerapp show --name ${{ env.CONTAINER_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --query properties.configuration.ingress.fqdn"
