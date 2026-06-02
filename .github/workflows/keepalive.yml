@@ -1,0 +1,38 @@
+name: Keep Alive
+
+on:
+  schedule:
+    # Every 5 minutes, Mon-Fri, 8am-10pm UK time (UTC+1 = 07:00-21:00 UTC)
+    - cron: '*/5 7-21 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Ping CRAM Services frontend
+        run: |
+          echo "Pinging CRAM Services..."
+          curl -sf --max-time 20 \
+            https://cramservices-frontend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/ \
+            -o /dev/null -w "CRAM frontend: %{http_code} (%{time_total}s)\n"
+
+      - name: Ping Tutorflow backend
+        run: |
+          curl -sf --max-time 20 \
+            https://tutorflow-backend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/health \
+            -o /dev/null -w "Tutorflow backend: %{http_code} (%{time_total}s)\n" || \
+          curl -sf --max-time 20 \
+            https://tutorflow-backend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/ \
+            -o /dev/null -w "Tutorflow backend (/): %{http_code} (%{time_total}s)\n"
+
+      - name: Ping Tutorflow frontend
+        run: |
+          curl -sf --max-time 20 \
+            https://tutorflow-frontend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/ \
+            -o /dev/null -w "Tutorflow frontend: %{http_code} (%{time_total}s)\n"
+
+      - name: All services alive
+        run: echo "Keep-alive complete at $(date -u)"
