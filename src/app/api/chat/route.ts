@@ -5,11 +5,13 @@ const BACKEND = process.env.NEXT_PUBLIC_API_URL || 'https://tutorflow-backend.wh
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    const tenantId = process.env.CRAM_TENANT_ID || '2';
     const res = await fetch(`${BACKEND}/api/public/enrol`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         ...body,
+        tenant_id: Number(tenantId),
         tenant: 'cram-services',
         context: 'CRAM Services AI assistant. Help users with AI automation, car detailing bookings, and general enquiries about CRAM Services.',
       }),
