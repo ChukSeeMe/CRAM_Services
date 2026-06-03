@@ -23,7 +23,7 @@ const newsItems = [
   },
   {
     date: 'AUGUST 2026',
-    title: 'Community Interest Company (CIC) Graduation',
+    title: 'CRAM Impact Skills Program Graduation',
     excerpt: 'Over 50 young professionals graduated from our summer skills acquisition program, moving directly into high-paying roles in tech and automotive sectors.',
     category: 'Community'
   }
@@ -65,13 +65,13 @@ export default function GalleryPage() {
         <div className="max-w-7xl mx-auto w-full relative z-10 text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <span className="text-[#D18F08] uppercase tracking-[0.4em] text-[10px] font-bold mb-6 flex items-center justify-center gap-4">
-              <Camera size={14} /> MEDIA & INSIGHTS
+              <Camera size={14} /> PROOF OF WORK & UPDATES
             </span>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.0] mb-8" style={{ fontFamily: 'var(--font-accent)' }}>
-              THE CRAM <span className="text-gold-gradient">GALLERY.</span>
+              OUR WORK & <span className="text-gold-gradient">UPDATES.</span>
             </h1>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto font-light leading-relaxed">
-              Explore our premium services, behind-the-scenes processes, and the community initiatives driving our mission forward.
+            <p className="text-gray-400 text-lg max-w-3xl mx-auto font-light leading-relaxed">
+              Explore our completed projects, real client case studies, performance metrics, product milestones, and the company announcements illustrating CRAM Services Group in action.
             </p>
           </motion.div>
         </div>

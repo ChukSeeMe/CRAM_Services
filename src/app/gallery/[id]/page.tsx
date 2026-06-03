@@ -30,7 +30,7 @@ export default async function GalleryDetail({ params }: { params: Promise<{ id: 
       {/* Navigation */}
       <div className="absolute top-32 left-6 md:left-12 z-20">
         <Link href="/gallery" className="flex items-center gap-2 text-white/50 hover:text-[#D18F08] transition-colors font-bold text-xs uppercase tracking-widest bg-black/50 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
-          <ArrowLeft size={16} /> Back to Gallery
+          <ArrowLeft size={16} /> Back to Work & Updates
         </Link>
       </div>
 
