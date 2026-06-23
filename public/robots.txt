@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://cramservices-frontend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/sitemap.xml

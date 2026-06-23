@@ -1,0 +1,28 @@
+name: Keep Alive
+
+on:
+  schedule:
+    # Ping every 20 minutes to prevent Azure Container App cold starts
+    - cron: '*/20 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: ping
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping CRAM Services
+        run: |
+          echo "Pinging CRAM Services..."
+          # --retry 3: retry up to 3 times on failure (handles cold starts)
+          # --retry-delay 15: wait 15s between retries
+          # --max-time 60: allow 60s per attempt (cold start can take 30-45s)
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            --retry 3 --retry-delay 15 --max-time 60 \
+            "https://cramservices-frontend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/")
+          echo "CRAM frontend: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "Unexpected status $STATUS"
+            exit 1
+          fi
+          echo "OK"

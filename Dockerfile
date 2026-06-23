@@ -1,7 +1,6 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-# Install all deps (including devDependencies needed for the build)
 RUN npm ci
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -12,6 +11,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=4000
+ENV HOSTNAME="0.0.0.0"
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

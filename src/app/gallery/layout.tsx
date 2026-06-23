@@ -1,9 +1,14 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Our Work & Updates | CRAM Services Group',
+  title: 'Our Work & Updates',
   description: 'View completed projects, client case studies, testimonials, and company updates across AI automation, software engineering, detailing, and community impact.',
   keywords: ['CRAM Portfolio', 'Case Studies', 'AI Projects', 'Car Detailing Results', 'CRAM News', 'Before & After Details'],
+  openGraph: {
+    title: 'Our Work & Updates | CRAM Services',
+    description: 'View completed projects, client case studies, testimonials, and company updates across AI automation, software engineering, detailing, and community impact.',
+    type: 'website',
+  },
 };
 
 export default function GalleryLayout({
