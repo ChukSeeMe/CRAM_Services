@@ -47,10 +47,10 @@ export default function FloatingActions() {
   ];
 
   return (
-    <div className="fixed bottom-8 right-6 z-[90] md:hidden">
+    <div className="fixed bottom-8 left-6 z-[90] md:hidden">
       <AnimatePresence>
         {isVisible && (
-          <div className="relative flex flex-col items-end gap-4">
+          <div className="relative flex flex-col items-start gap-4">
             {/* Action Buttons */}
             <AnimatePresence>
               {isOpen && (
@@ -58,36 +58,36 @@ export default function FloatingActions() {
                   initial={{ opacity: 0, y: 20, scale: 0.8 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 20, scale: 0.8 }}
-                  className="flex flex-col items-end gap-3 mb-2"
+                  className="flex flex-col items-start gap-3 mb-2"
                 >
                   {actions.map((action, i) => (
                     <motion.div
                       key={action.name}
-                      initial={{ opacity: 0, x: 20 }}
+                      initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.08 }}
                       className="flex items-center gap-3"
                     >
-                      <span className="bg-black/80 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-lg border border-white/10 backdrop-blur-md">
-                        {action.name}
-                      </span>
                       {action.href ? (
                         <a
                           href={action.href}
                           target={action.href.startsWith('http') ? '_blank' : undefined}
                           rel={action.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                          className={`w-12 h-12 rounded-full flex items-center justify-center shadow-2xl ${action.color}`}
+                          className={`w-12 h-12 rounded-full flex items-center justify-center shadow-2xl shrink-0 ${action.color}`}
                         >
                           {action.icon}
                         </a>
                       ) : (
                         <button
                           onClick={action.onClick}
-                          className={`w-12 h-12 rounded-full flex items-center justify-center shadow-2xl ${action.color}`}
+                          className={`w-12 h-12 rounded-full flex items-center justify-center shadow-2xl shrink-0 ${action.color}`}
                         >
                           {action.icon}
                         </button>
                       )}
+                      <span className="bg-black/90 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-lg border border-white/10">
+                        {action.name}
+                      </span>
                     </motion.div>
                   ))}
                 </motion.div>

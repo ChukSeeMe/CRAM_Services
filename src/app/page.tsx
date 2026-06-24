@@ -65,8 +65,11 @@ export default function Home() {
     <div className="min-h-screen flex flex-col pt-10">
       {/* Hero Section */}
       <section className="relative pt-48 pb-24 px-6 overflow-hidden flex-grow flex flex-col items-center justify-center min-h-screen">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#D18F08] opacity-[0.05] blur-[120px] rounded-full pointer-events-none z-0"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#D18F08] opacity-[0.03] blur-[100px] rounded-full pointer-events-none z-0"></div>
+        {/* Decorative blobs hidden on mobile — blur-[120px] exhausts mobile GPU */}
+        <div className="hidden md:block absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#D18F08] opacity-[0.05] blur-[120px] rounded-full pointer-events-none z-0"></div>
+        <div className="hidden md:block absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#D18F08] opacity-[0.03] blur-[100px] rounded-full pointer-events-none z-0"></div>
+        {/* Mobile-safe subtle glow */}
+        <div className="md:hidden absolute inset-0 bg-gradient-to-br from-[#D18F08]/[0.03] to-transparent pointer-events-none z-0"></div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -109,8 +112,9 @@ export default function Home() {
                   <img
                     src={service.image}
                     alt={service.title}
-                    className="w-full h-full object-cover opacity-60 mix-blend-luminosity transition-transform duration-1000 group-hover:scale-110"
+                    className="w-full h-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105"
                     loading={service.id === 'ai' ? 'eager' : 'lazy'}
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/70 to-transparent"></div>
                 </div>
@@ -153,14 +157,14 @@ export default function Home() {
 
             {/* CEO Image */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.05 }}
+              transition={{ duration: 0.6 }}
               className="w-full lg:w-2/5 flex-shrink-0"
             >
               <div className="relative mx-auto max-w-sm lg:max-w-none">
-                <div className="absolute inset-0 bg-[#D18F08] opacity-15 blur-[60px] rounded-full"></div>
+                <div className="hidden md:block absolute inset-0 bg-[#D18F08] opacity-15 blur-[60px] rounded-full"></div>
                 <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(0,0,0,0.6)]">
                   <img
                     src="/ai_provided_image.jpg"
@@ -181,10 +185,10 @@ export default function Home() {
 
             {/* About Content */}
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.1 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.05 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
               className="w-full lg:w-3/5"
             >
               <span className="text-[#D18F08] uppercase tracking-[0.4em] text-[10px] font-bold mb-4 block">About Us</span>

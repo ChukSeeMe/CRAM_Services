@@ -68,8 +68,7 @@ export default function ChatWidget() {
   };
 
   return (
-    /* Hidden on mobile — FloatingActions handles mobile contact options */
-    <div className="fixed bottom-6 right-6 z-[95] hidden md:flex flex-col items-end gap-3">
+    <div className="fixed bottom-6 right-6 z-[95] flex flex-col items-end gap-3">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -77,8 +76,8 @@ export default function ChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="w-[380px] flex flex-col bg-[#0A0A0A] border border-white/10 rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.8)] mb-2"
-            style={{ maxHeight: '520px' }}
+            className="w-[calc(100vw-3rem)] max-w-[380px] flex flex-col bg-[#0A0A0A] border border-white/10 rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.8)] mb-2"
+            style={{ maxHeight: 'min(520px, calc(100dvh - 120px))' }}
           >
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-[#111]">
