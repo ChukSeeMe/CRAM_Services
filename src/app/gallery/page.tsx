@@ -101,7 +101,13 @@ export default function GalleryPage() {
           {loading && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[250px]">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="rounded-3xl bg-white/5 animate-pulse h-[250px]" />
+                <div key={i} className="rounded-3xl overflow-hidden h-[250px] relative bg-[#111] border border-white/5">
+                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2">
+                    <div className="h-2 w-16 bg-white/10 rounded-full" />
+                    <div className="h-4 w-3/4 bg-white/10 rounded-full" />
+                  </div>
+                </div>
               ))}
             </div>
           )}
