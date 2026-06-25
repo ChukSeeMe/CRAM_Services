@@ -20,9 +20,9 @@ export default function Navbar() {
   const navLinks: { name: string; href: string; onClick?: () => void }[] = [
     { name: 'AI Solutions', href: '/ai-revenue' },
     { name: 'Car Detailing', href: '/car-detailing' },
-    { name: 'Products', href: '/products' },
     { name: 'Gallery', href: '/gallery' },
     { name: 'Community', href: '/internship' },
+    { name: 'About Us', href: '/about' },
   ];
 
   return (
