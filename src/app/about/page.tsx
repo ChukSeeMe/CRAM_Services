@@ -63,8 +63,8 @@ const team = [
   {
     name: 'Chukwuka Ugwu',
     role: 'Founder & Director',
-    image: '/team/director.jpg',
-    placeholder: '/ai_provided_image.jpg',
+    image: '/team/director.png',
+    placeholder: '/team/director.png',
     bio: 'Founder of CRAM Services and the driving force behind all three divisions. Chukwuka combines a deep background in AI systems and technology with hands-on experience in premium service delivery and community development.',
     linkedin: 'https://www.linkedin.com/in/chukwuka-ugwu-/',
   },
@@ -146,15 +146,11 @@ export default function AboutPage() {
             <div className="w-full lg:w-[42%] h-[480px] lg:h-auto overflow-hidden relative flex-shrink-0">
               <div className="absolute inset-0 bg-[#D18F08]/10 mix-blend-overlay z-10 pointer-events-none"></div>
               <img
-                src={team[0].placeholder!}
+                src={team[0].image!}
                 alt={team[0].name}
                 className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
                 loading="eager"
                 decoding="async"
-                onError={(e) => {
-                  /* fallback to placeholder if director.jpg not yet uploaded */
-                  (e.target as HTMLImageElement).src = team[0].placeholder!;
-                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent z-20 pointer-events-none"></div>
             </div>
@@ -228,12 +224,11 @@ export default function AboutPage() {
             >
               <div className="h-56 overflow-hidden relative">
                 <img
-                  src={team[0].placeholder!}
+                  src={team[0].image!}
                   alt={team[0].name}
                   className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
                   loading="lazy"
                   decoding="async"
-                  onError={(e) => { (e.target as HTMLImageElement).src = team[0].placeholder!; }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
               </div>
