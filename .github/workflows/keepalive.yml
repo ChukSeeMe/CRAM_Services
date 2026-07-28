@@ -1,38 +1,67 @@
-name: Keep Alive
+name: TutorFlow Keep Alive
 
 on:
   schedule:
-    # Every 5 minutes, Mon-Fri, 8am-10pm UK time (UTC+1 = 07:00-21:00 UTC)
-    - cron: '*/5 7-21 * * 1-5'
+    # Every 20 minutes during UK daytime on weekdays
+    - cron: '*/20 7-21 * * 1-5'
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tutorflow-keep-alive
+  cancel-in-progress: true
 
 jobs:
   ping:
+    name: ping TutorFlow
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
 
     steps:
-      - name: Ping CRAM Services frontend
+      - name: Ping TutorFlow services
+        shell: bash
         run: |
-          echo "Pinging CRAM Services..."
-          curl -sf --max-time 20 \
-            https://cramservices-frontend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/ \
-            -o /dev/null -w "CRAM frontend: %{http_code} (%{time_total}s)\n"
+          ping_service() {
+            local name="$1"
+            shift
+            local urls=("$@")
 
-      - name: Ping Tutorflow backend
-        run: |
-          curl -sf --max-time 20 \
-            https://tutorflow-backend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/health \
-            -o /dev/null -w "Tutorflow backend: %{http_code} (%{time_total}s)\n" || \
-          curl -sf --max-time 20 \
-            https://tutorflow-backend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/ \
-            -o /dev/null -w "Tutorflow backend (/): %{http_code} (%{time_total}s)\n"
+            for attempt in 1 2 3; do
+              for url in "${urls[@]}"; do
+                echo "${name} attempt ${attempt}/3: ${url}"
 
-      - name: Ping Tutorflow frontend
-        run: |
-          curl -sf --max-time 20 \
-            https://tutorflow-frontend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/ \
-            -o /dev/null -w "Tutorflow frontend: %{http_code} (%{time_total}s)\n"
+                status=$(curl --location --silent --show-error \
+                  --output /tmp/tutorflow-response.txt \
+                  --write-out "%{http_code}" \
+                  --connect-timeout 20 \
+                  --max-time 90 \
+                  "${url}")
+                curl_exit=$?
 
-      - name: All services alive
-        run: echo "Keep-alive complete at $(date -u)"
+                echo "curl exit code: ${curl_exit}"
+                echo "Final HTTP status: ${status:-none}"
+
+                if [ "${curl_exit}" -eq 0 ] && [[ "${status}" =~ ^2[0-9][0-9]$ ]]; then
+                  echo "${name} is responding successfully."
+                  return 0
+                fi
+              done
+
+              if [ "${attempt}" -lt 3 ]; then
+                echo "Waiting 20 seconds before retrying ${name}..."
+                sleep 20
+              fi
+            done
+
+            echo "::error::${name} did not return a successful 2xx response after 3 attempts."
+            return 1
+          }
+
+          ping_service "TutorFlow backend" \
+            "https://tutorflow-backend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/health" \
+            "https://tutorflow-backend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/"
+
+          ping_service "TutorFlow frontend" \
+            "https://tutorflow-frontend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/"
