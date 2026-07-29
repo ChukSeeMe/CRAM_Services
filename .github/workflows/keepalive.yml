@@ -17,7 +17,7 @@ jobs:
   ping:
     name: ping TutorFlow
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
 
     steps:
       - name: Ping TutorFlow services
@@ -25,29 +25,31 @@ jobs:
         run: |
           ping_service() {
             local name="$1"
-            shift
-            local urls=("$@")
+            local url="$2"
 
             for attempt in 1 2 3; do
-              for url in "${urls[@]}"; do
-                echo "${name} attempt ${attempt}/3: ${url}"
+              echo "${name} attempt ${attempt}/3: ${url}"
 
-                status=$(curl --location --silent --show-error \
-                  --output /tmp/tutorflow-response.txt \
-                  --write-out "%{http_code}" \
-                  --connect-timeout 20 \
-                  --max-time 90 \
-                  "${url}")
+              # Use an if-condition so Bash's automatic -e mode does not
+              # terminate the job before we can capture curl failures and retry.
+              if status=$(curl --location --silent --show-error \
+                --output /tmp/tutorflow-response.txt \
+                --write-out "%{http_code}" \
+                --connect-timeout 20 \
+                --max-time 90 \
+                "${url}"); then
+                curl_exit=0
+              else
                 curl_exit=$?
+              fi
 
-                echo "curl exit code: ${curl_exit}"
-                echo "Final HTTP status: ${status:-none}"
+              echo "curl exit code: ${curl_exit}"
+              echo "Final HTTP status: ${status:-none}"
 
-                if [ "${curl_exit}" -eq 0 ] && [[ "${status}" =~ ^2[0-9][0-9]$ ]]; then
-                  echo "${name} is responding successfully."
-                  return 0
-                fi
-              done
+              if [ "${curl_exit}" -eq 0 ] && [[ "${status}" =~ ^2[0-9][0-9]$ ]]; then
+                echo "${name} is responding successfully."
+                return 0
+              fi
 
               if [ "${attempt}" -lt 3 ]; then
                 echo "Waiting 20 seconds before retrying ${name}..."
@@ -60,8 +62,7 @@ jobs:
           }
 
           ping_service "TutorFlow backend" \
-            "https://tutorflow-backend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/health" \
-            "https://tutorflow-backend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/"
+            "https://tutorflow-backend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/health"
 
           ping_service "TutorFlow frontend" \
             "https://tutorflow-frontend.whitesea-c505a8c9.uksouth.azurecontainerapps.io/"
